@@ -16,6 +16,7 @@ import TemplateModal from '../components/template-modal';
 import Layout from './layout/';
 import Sidebar from './sidebar/';
 import Testing from './testing/';
+import Typography from './typography/';
 import registerEditorPlugin from './editor/';
 
 registerEditorPlugin();
@@ -62,6 +63,12 @@ const NewsletterEdit = ( {
 				title={ __( 'Newsletter', 'newspack-newsletters' ) }
 			>
 				<Sidebar />
+			</PluginDocumentSettingPanel>
+			<PluginDocumentSettingPanel
+				name="newsletters-typography-panel"
+				title={ __( 'Typography', 'newspack-newsletters' ) }
+			>
+				<Typography />
 			</PluginDocumentSettingPanel>
 			<PluginDocumentSettingPanel
 				name="newsletters-testing-panel"
