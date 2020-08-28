@@ -101,23 +101,21 @@ final class Newspack_Newsletters {
 				$meta_query = [];
 			}
 
+			$query->set( 'post_type', 'any' );
+
 			$meta_query[] = [
-				'post_type' => 'any',
-				'meta_query' => [
-					'relation' => 'OR',
-					[
-						'key' => 'is_public',
-						'value' => 1,
-						'type' => 'BINARY',
-						'compare' => '=',
-					],
-					[
-						'key' => 'is_public',
-						'compare' => 'NOT EXISTS',
-					]
+				'relation' => 'OR',
+				[
+					'key' => 'is_public',
+					'value' => 1,
+					'type' => 'BINARY',
+					'compare' => '=',
+				],
+				[
+					'key' => 'is_public',
+					'compare' => 'NOT EXISTS',
 				]
 			];
-
 			$query->set( 'meta_query', $meta_query );
 		}
 	}
