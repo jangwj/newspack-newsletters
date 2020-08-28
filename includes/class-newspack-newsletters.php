@@ -76,7 +76,7 @@ final class Newspack_Newsletters {
 		add_filter( 'newspack_newsletters_assess_has_disabled_popups', [ __CLASS__, 'disable_campaigns_for_newsletters' ], 11 );
 		add_filter( 'jetpack_relatedposts_filter_options', [ __CLASS__, 'disable_jetpack_related_posts' ] );
 		add_action( 'save_post_' . self::NEWSPACK_NEWSLETTERS_CPT, [ __CLASS__, 'save' ], 10, 3 );
-		add_filter( 'posts_results', [ __CLASS__, 'filter_search' ] );
+		add_filter( 'pre_get_posts', [ __CLASS__, 'filter_search' ] );
 
 		self::set_service_provider( self::service_provider() );
 
@@ -93,16 +93,33 @@ final class Newspack_Newsletters {
 	 *
 	 * @param array $posts The found posts.
 	 */
-	public static function filter_search( $posts ) {
-		return array_filter(
-			$posts,
-			function ( $post ) {
-				if ( self::NEWSPACK_NEWSLETTERS_CPT === $post->post_type ) {
-					return get_post_meta( $post->ID, 'is_public', true );
-				}
-				return true;
+	public static function filter_search( $query ) {
+		if (! $query->is_admin && $query->is_search) {
+			$meta_query = $query->get( 'meta_query' );
+
+			if ( empty( $meta_query ) || ! is_array( $meta_query ) ) {
+				$meta_query = [];
 			}
-		);
+
+			$meta_query[] = [
+				'post_type' => 'any',
+				'meta_query' => [
+					'relation' => 'OR',
+					[
+						'key' => 'is_public',
+						'value' => 1,
+						'type' => 'BINARY',
+						'compare' => '=',
+					],
+					[
+						'key' => 'is_public',
+						'compare' => 'NOT EXISTS',
+					]
+				]
+			];
+
+			$query->set( 'meta_query', $meta_query );
+		}
 	}
 
 	/**
